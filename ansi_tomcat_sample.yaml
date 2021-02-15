@@ -1,0 +1,21 @@
+---
+- name: build  and run tomcat/sample container
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: build the image
+    docker_image:
+      path: .
+      state: present
+      name: tomcat-sample
+      tag: 1.0
+  - name: start the container
+    docker_container:
+      name: tomcat-sample-container
+      image: tomcat-sample:1.0
+      ports: 8080:8080
+      state: started
+    register: container
+  - name: Execute unit test
+    command: pytest
+    when: container.changed
